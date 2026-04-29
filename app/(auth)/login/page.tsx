@@ -31,12 +31,23 @@ export default function LoginPage() {
       }
 
       if (data?.user) {
-        setStatus('Login OK! Redirecting...')
-        // Force full page navigation
-        setTimeout(() => {
-          window.location.replace('/dashboard')
-        }, 500)
-      } else {
+  setStatus('Login OK! Redirecting...')
+
+  // Fetch role from profiles table
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', data.user.id)
+    .single()
+
+  setTimeout(() => {
+    if (profile?.role === 'admin') {
+      window.location.replace('/admin')
+    } else {
+      window.location.replace('/dashboard')
+    }
+  }, 500)
+} else {
         setError('No user returned — check credentials')
         setLoading(false)
       }
